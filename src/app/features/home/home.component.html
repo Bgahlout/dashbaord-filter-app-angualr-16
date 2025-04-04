@@ -1,2 +1,57 @@
-<h1>Welcome to Home</h1>
-<app-button label="Click Me"></app-button>
+<mat-toolbar color="primary" class="navbar">
+  <span class="navbar-title">Dynamic Filter Navbar</span>
+  <span class="spacer"></span>
+  <form [formGroup]="dropdownForm" class="dropdown-form">
+    <mat-form-field appearance="outline" class="dropdown-field">
+      <mat-label>Dropdown 1</mat-label>
+      <mat-select formControlName="dropdown1" multiple>
+        <mat-option *ngFor="let option of dropdown1Options" [value]="option">
+          {{ option }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="dropdown-field">
+      <mat-label>Dropdown 2</mat-label>
+      <mat-select formControlName="dropdown2" multiple>
+        <mat-option *ngFor="let option of dropdown2Options" [value]="option">
+          {{ option }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="dropdown-field">
+      <mat-label>Dropdown 3</mat-label>
+      <mat-select formControlName="dropdown3" multiple>
+        <mat-option *ngFor="let option of dropdown3Options" [value]="option">
+          {{ option }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <button mat-raised-button color="accent" (click)="resetFilters()">Reset</button>
+    <button mat-raised-button color="primary" (click)="applyFilters()">Apply</button>
+  </form>
+</mat-toolbar>
+
+<div class="table-container">
+  <table mat-table [dataSource]="(filteredData$ | async) || []" class="mat-elevation-z8">
+    <ng-container matColumnDef="id">
+      <th mat-header-cell *matHeaderCellDef> ID </th>
+      <td mat-cell *matCellDef="let element"> {{ element.id }} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef> Name </th>
+      <td mat-cell *matCellDef="let element"> {{ element.name }} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="value">
+      <th mat-header-cell *matHeaderCellDef> Value </th>
+      <td mat-cell *matCellDef="let element"> {{ element.value }} </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+</div>
