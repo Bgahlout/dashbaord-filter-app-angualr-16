@@ -8,6 +8,7 @@ import { MatTableModule } from '@angular/material/table';
 import { CommonModule } from '@angular/common';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { switchMap, debounceTime } from 'rxjs/operators';
+import { ApiService } from 'src/app/core/services/api.service'; // Adjust the import path as necessary
 
 @Component({
   selector: 'app-home',
@@ -33,7 +34,7 @@ export class HomeComponent {
   private filterSubject = new BehaviorSubject<any>(null);
   filteredData$: Observable<any[]>;
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, private apiService: ApiService) {
     this.dropdownForm = this.fb.group({
       dropdown1: [[]], // Multi-select dropdowns initialized as empty arrays
       dropdown2: [[]],
@@ -56,26 +57,24 @@ export class HomeComponent {
   applyFilters(): void {
     this.filterSubject.next(this.dropdownForm.value); // Emit the current filter values
   }
+
   fetchData(filters: any): Observable<any[]> {
-    // Simulate an API call with filters
-    const mockData = [
-      { id: 1, name: 'Item 1', value: 'Value 1' },
-      { id: 2, name: 'Item 2', value: 'Value 2' },
-      { id: 3, name: 'Item 3', value: 'Value 3' }
-    ];
+    return this.apiService.fetchData().pipe(
+      switchMap((data) => {
+        if (!filters) {
+          return [data]; // Return all data if no filters are applied
+        }
 
-    if (!filters) {
-      return of(mockData); // Return all data if no filters are applied
-    }
-
-    // Filter data based on dropdown values
-    return of(
-      mockData.filter((item) => {
-        return (
-          (!filters.dropdown1.length || filters.dropdown1.includes(item.name)) &&
-          (!filters.dropdown2.length || filters.dropdown2.includes(item.value)) &&
-          (!filters.dropdown3.length || filters.dropdown3.includes(item.name))
-        );
+        // Filter data based on dropdown values
+        return [
+          data.filter((item) => {
+            return (
+              (!filters.dropdown1.length || filters.dropdown1.includes(item.name)) &&
+              (!filters.dropdown2.length || filters.dropdown2.includes(item.value)) &&
+              (!filters.dropdown3.length || filters.dropdown3.includes(item.name))
+            );
+          })
+        ];
       })
     );
   }
