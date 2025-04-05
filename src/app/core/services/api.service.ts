@@ -1,20 +1,17 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ApiService {
+  private apiUrl = 'https://jsonplaceholder.typicode.com/posts'; // Free API endpoint
+
   constructor(private http: HttpClient) {}
 
-  // Simulate a dummy API call
+  // Fetch data from the free API
   fetchData(): Observable<any[]> {
-    const mockData = [
-      { id: 1, name: 'Item 1', value: 'Value 1' },
-      { id: 2, name: 'Item 2', value: 'Value 2' },
-      { id: 3, name: 'Item 3', value: 'Value 3' }
-    ];
-    return of(mockData); // Replace with `this.http.get('API_URL')` for real API
+    return this.http.get<any[]>(this.apiUrl);
   }
 }
